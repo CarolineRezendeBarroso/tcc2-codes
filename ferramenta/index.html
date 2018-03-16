@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PÁGINA DA FERRAMENTA</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src=".\JS\Ferramenta.js"></script>
+</head>
+<body>
+
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+
+      
+      <div class="navbar-header">
+        <a class="navbar-brand" href="#">Electronics Ltda.</a>
+      </div>
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="#">Home</a></li>
+        <li><a href="#">Como Usar</span></a></li>
+          <!--<ul class="dropdown-menu">
+            <li><a href="#">Smartphones</a></li>
+            <li><a href="#">Notebooks</a></li>
+            <li><a href="#">Tablets</a></li>
+          </ul>-->       
+        <li><a href="#">Contato</a></li>
+      </ul>
+      <form class="navbar-form navbar-left c_submit" action="/action_page.php">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="O que procura?" name="search">
+          <div class="input-group-btn">
+            <button class="btn btn-default" type="submit">
+              <i class="glyphicon glyphicon-search"></i>
+            </button>
+          </div>
+        </div>
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Entrar</a></li>
+        <li><a href="#"><span class="glyphicon glyphicon-log-in" ></span> Cadastro</a></li>
+      </ul>
+    </div>
+  
+    <div class="jumbotron text-center">
+      <h1>MONITORE A USABILIDADE DE SUA APLICAÇÃO WEB</h1>
+      <p>CONHEÇA NOSSA FERRAMENTA!</p>
+      <img src=".\IMG\usabilidade2.jpg">
+    
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-4"></div>
+          <div class="col-sm-4 c_mouseenter">
+            <h3>O QUE É USABILIDADE?</h3>
+            <p style="font-size:medium"> “Usabilidade é a medida de qualidade da experiência de um usuário ao interagir com um produto ou um sistema”.</p>
+            <p style="font-size:small">Jakob Nielsen</p>
+          </div>
+        </div>
+      </div>      
+    </div>
+  </nav>
+
+  <div align="center">
+    <p>
+      <a href="https://pt-br.facebook.com/"><img class="c_mouseenter c_click" src=".\IMG\face.png" width="30" height="30"></a>
+      <a href="https://www.instagram.com/?hl=pt-br"><img src=".\IMG\insta.png" width="30" height="30"></a>
+    </p>
+    <p class="c_click">Acesse nossas redes sociais!</p>
+  </div>  
+</body>
+</html>
