@@ -8,7 +8,7 @@
   <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src=".\JS\Ferramenta.js"></script>
+  <script src=".\JS\ferramenta.js"></script>
 </head>
 <body>
 
@@ -40,15 +40,17 @@
         </div>
       </form>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><span class="glyphicon glyphicon-user"></span> Entrar</a></li>
-        <li><a href="#"><span class="glyphicon glyphicon-log-in" ></span> Cadastro</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#logar"><span class="glyphicon glyphicon-user"></span> Entrar</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#cadastrar"><span class="glyphicon glyphicon-log-in" ></span> Cadastro</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#alterar_senha"><span class="glyphicon glyphicon-pencil" ></span> Alterar senha</a></li>
+        <li><a href="#" id="chamar_mod_id"><span class="glyphicon glyphicon-info-sign" ></span> Consultar ID</a></li>
       </ul>
     </div>
   
     <div class="jumbotron text-center">
       <h1>MONITORE A USABILIDADE DE SUA APLICAÇÃO WEB</h1>
       <p>CONHEÇA NOSSA FERRAMENTA!</p>
-      <img src=".\IMG\usabilidade2.jpg">
+      <img src=".\images\usabilidade2.jpg">
     
       <div class="container">
         <div class="row">
@@ -65,10 +67,137 @@
 
   <div align="center">
     <p>
-      <a href="https://pt-br.facebook.com/"><img class="c_mouseenter c_click" src=".\IMG\face.png" width="30" height="30"></a>
-      <a href="https://www.instagram.com/?hl=pt-br"><img src=".\IMG\insta.png" width="30" height="30"></a>
+      <a href="https://pt-br.facebook.com/"><img class="c_mouseenter c_click" src=".\images\face.png" width="30" height="30"></a>
+      <a href="https://www.instagram.com/?hl=pt-br"><img src=".\images\insta.png" width="30" height="30"></a>
     </p>
     <p class="c_click">Acesse nossas redes sociais!</p>
-  </div>  
+  </div>
+
+  <!-- Modal Cadastro Admin -->
+  <div class="modal fade" id="cadastrar">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Cadastro do Administrador</h4>
+        </div>
+        <div class="modal-body">
+          <!--<form role="form">-->
+            <div class="form-group">
+              <label for="email_cadastro"><span class="glyphicon glyphicon-user"></span> E-mail</label>
+              <input id="email_cadastro" type="text" class="form-control" placeholder="Entre com seu e-mail">
+              <label id="email_cad_msg"></label>
+            </div>
+            <div class="form-group">
+              <label for="senha_cadastro"><span class="glyphicon glyphicon-eye-open"></span> Senha</label>
+              <input id="senha_cadastro" type="password" class="form-control" placeholder="Entre com uma senha" disabled>
+              <label id="senha_cad_msg"></label>
+            </div>
+            <div class="form-group">
+              <label for="conf_senha_cadastro"><span class="glyphicon glyphicon-eye-open"></span> Confirmar senha</label>
+              <input id="conf_senha_cadastro" type="password" class="form-control" placeholder="Confirme sua senha" disabled>
+              <label id="conf_senha_msg"></label>
+              <label id="conf_token"></label>
+            </div>
+          <!--</form>-->
+        </div>
+        <div class="modal-footer">
+          <button id="salvar_cadastro" type="button" class="btn btn-default" disabled>Salvar</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Alterar Senha -->
+  <div class="modal fade" id="alterar_senha">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close fechar_alt" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Alterar senha do Administrador</h4>
+        </div>
+        <div class="modal-body">
+          <form role="form">
+            <div class="form-group">
+              <label for="email_altera"><span class="glyphicon glyphicon-user"></span> E-mail</label>
+              <input id="email_altera" type="text" class="form-control" placeholder="Entre com seu e-mail">
+              <label id="email_alt_msg"></label>
+            </div>
+            <div class="form-group">
+              <label for="senha_alterar"><span class="glyphicon glyphicon-eye-open"></span> Senha atual</label>
+              <input id="senha_alterar" type="password" class="form-control" placeholder="Entre com sua senha atual">
+              <label id="senha_alt_msg"></label>
+            </div>
+            <div class="form-group">
+              <label for="senha_nova"><span class="glyphicon glyphicon-eye-open"></span> Senha nova</label>
+              <input id="senha_nova" type="password" class="form-control" placeholder="Entre com uma senha nova">
+              <label id="senha_nova_msg"></label>
+            </div>
+            <div class="form-group">
+              <label for="confirma_alt"><span class="glyphicon glyphicon-eye-open"></span> Confirmar senha</label>
+              <input id="confirma_alt" type="password" class="form-control" placeholder="Confirme sua senha nova">
+              <label id="senha_nova_conf"></label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="salva_alt" type="button" class="btn btn-default">Salvar</button>
+          <button type="button" class="btn btn-default fechar_alt" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Logar -->
+  <div class="modal fade" id="logar">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close fechar_id" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Logar</h4>
+        </div>
+        <div class="modal-body">
+          <!--<form role="form">-->
+            <div class="form-group">
+              <label for="email_id"><span class="glyphicon glyphicon-user"></span> E-mail</label>
+              <input id="email_id" type="text" class="form-control" placeholder="Entre com seu e-mail">
+              <label id="email_id_msg"></label>
+            </div>
+            <div class="form-group">
+              <label for="senha_id"><span class="glyphicon glyphicon-eye-open"></span> Senha</label>
+              <input id="senha_id" type="password" class="form-control" placeholder="Entre com uma senha">
+              <label id="senha_id_msg"></label>
+            </div>
+          <!--</form>-->
+        </div>
+        <div class="modal-footer">
+          <button id="consultar_id" type="button" class="btn btn-default">Logar</button>
+          <button type="button" class="btn btn-default fechar_id" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Consultar ID -->
+  <div class="modal fade" id="mostra_id">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close fechar_id" data-dismiss="modal">&times;</button>
+          <h4 class="modal-title">Consulta do ID do Administrador</h4>
+        </div>
+        <div class="modal-body">
+          <p>Este é seu ID. Anexe ao seu código HTML para integrar a nossa ferramenta à sua aplicação web!</p>
+          <label id="traz_id"></label>
+        </div>
+        <div class="modal-footer">
+          <!--<button id="consultar_id" type="button" class="btn btn-default">Consultar</button>-->
+          <button type="button" class="btn btn-default fechar_id" data-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

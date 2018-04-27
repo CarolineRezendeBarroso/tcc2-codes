@@ -1,20 +1,33 @@
 /*Coletor de dados*/
 
-var scripts = ['https://www.gstatic.com/firebasejs/4.11.0/firebase.js'];
+var scripts = ['https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js',
+  			   'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js',
+			   'https://www.gstatic.com/firebasejs/4.11.0/firebase.js'];
 
-function carregar_scripts(callback) {
-    if (scripts == null || scripts.length == 0) {
-        callback();
-        return;
+function loadScripts(scripts, callBack){
+	//Para cada script do array "scripts"...
+    scripts.forEach(function(script){
+        var s   = document.createElement('script');
+        s.src   = script;
+        s.type  = "text/javascript";
+        s.async = false;
+        //Faz a leitura do array, compara o script com os scripts que já estão no head do html e 
+        //SE NÃO ENCONTRAR O SCRIPT no html, ADICIONA-O
+        for (var i = 0; i < scripts.length; i++) {
+        	if(scripts[i] != document.getElementsByTagName('head')[0]){
+        		document.getElementsByTagName('head')[0].appendChild(s);
+        	}
+        }
+    });
+    if(callBack != null){
+        window.onload = function(){
+            callBack();
+        }
     }
-    var script = scripts[0];
-    scripts = scripts.slice(1);
- 
-    $.getScript(script, function() { carregar_scripts(callback); });
 }
-
-carregar_scripts(function(){ $(document).ready(function() {
-
+  
+loadScripts(scripts, function(){ $(document).ready(function() {
+  
 	var lista = new Map();
 
 	//Objeto Literal de controle da página
@@ -112,7 +125,7 @@ carregar_scripts(function(){ $(document).ready(function() {
   	var database = firebase.database();
 
 	//Eventos serão capturados através de uma única classe(.controle) e um atributo de recuperação (data-track)
-	$(".controle").click(function(){
+	$('[data-element="true"]').click(function(){
 		if(lista.has(this.getAttribute("data-track")) == true){	
 			lista.get(this.getAttribute("data-track")).click = lista.get(this.getAttribute("data-track")).click + 1;
 		}else{
@@ -195,9 +208,32 @@ carregar_scripts(function(){ $(document).ready(function() {
 	//Scroll da página inteira do html
 	//FAZER MAPEAMENTO DE %
 	$(window).scroll(function(){
-   		if($(this).scrollTop() + $(this).height() == $(document).height()) {
-			controle_pag.scroll = "100";
-   		}
+   		
+   		var scrollTop = $(window).scrollTop();
+        var docHeight = $(document).height();
+        var winHeight = $(window).height();
+        var scrollPercent = (scrollTop) / (docHeight - winHeight);
+        var scrollPercentage = Math.round(scrollPercent*100);
+        console.log(scrollPercentage);
+        
+        /*if(scrollPercentage >= 25 && $.inArray("25", Analytics.sentScroll) == -1){
+            Analytics.sendGa('send', 'event', pageNameWithoutSlash, 'scroll-25', 'scroll');
+            controle_pag.scroll = Analytics.sentScroll.push("25");
+
+        }
+        if(scrollPercentage >= 50 && $.inArray("50", Analytics.sentScroll) == -1){
+            Analytics.sendGa('send', 'event', pageNameWithoutSlash, 'scroll-50', 'scroll');
+            Analytics.sentScroll.push("50");
+        }
+        if(scrollPercentage >= 75 && $.inArray("75", Analytics.sentScroll) == -1){
+            Analytics.sendGa('send', 'event', pageNameWithoutSlash, 'scroll-75', 'scroll');
+            Analytics.sentScroll.push("75");
+        }
+        if(scrollPercentage == 100 && $.inArray("100", Analytics.sentScroll) == -1){
+            Analytics.sendGa('send', 'event', pageNameWithoutSlash, 'scroll-100', 'scroll');
+            Analytics.sentScroll.push("100");
+        }*/
+
 	});
 
 	//Evento de saída da página - os dados coletados só serão enviados e salvos no Banco de Dados quando o usuário sair da página ou recarregá-la
@@ -230,7 +266,5 @@ carregar_scripts(function(){ $(document).ready(function() {
 			controle_pag
 		});
 	};
-  });
-});
-
-
+  //});
+})});
