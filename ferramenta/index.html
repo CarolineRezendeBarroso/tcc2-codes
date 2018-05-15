@@ -4,81 +4,280 @@
   <title>PÁGINA DA FERRAMENTA</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
   <script src="https://www.gstatic.com/firebasejs/4.11.0/firebase.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <script src=".\JS\ferramenta.js"></script>
+  <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  
+  <script src=".\js\ferramenta.js"></script>
 </head>
 <body>
 
-  <nav class="navbar navbar-inverse">
-    <div class="container-fluid">
+  <nav class="navbar">
+    <div class="container-fluid navbar-inverse">
 
-      
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Electronics Ltda.</a>
+        <a class="navbar-brand" href="#">ViewUp Usability</a>
       </div>
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-        <li><a href="#">Como Usar</span></a></li>
-          <!--<ul class="dropdown-menu">
-            <li><a href="#">Smartphones</a></li>
-            <li><a href="#">Notebooks</a></li>
-            <li><a href="#">Tablets</a></li>
-          </ul>-->       
-        <li><a href="#">Contato</a></li>
+      <ul class="nav navbar-nav navbar-left">
+        <li><a class="nav-link active" data-toggle="tab" href="#home">Home</a></li>
+        <li><a id="como_usar0" class="nav-link"  data-toggle="tab" href="#menu1">Como usar</a></li>
+        <li><a class="nav-link"  data-toggle="tab" href="#menu2">Contato</a></li>
+        <li><a id="consulta_dados" class="nav-link"  data-toggle="tab" href="#menu3">Consultar Dados</a></li>
       </ul>
-      <form class="navbar-form navbar-left c_submit" action="/action_page.php">
-        <div class="input-group">
-          <input type="text" class="form-control" placeholder="O que procura?" name="search">
-          <div class="input-group-btn">
-            <button class="btn btn-default" type="submit">
-              <i class="glyphicon glyphicon-search"></i>
-            </button>
-          </div>
-        </div>
-      </form>
+	
       <ul class="nav navbar-nav navbar-right">
+	    <li><a href="#" id="logado"></a></li>
         <li><a href="#" data-toggle="modal" data-target="#logar"><span class="glyphicon glyphicon-user"></span> Entrar</a></li>
-        <li><a href="#" data-toggle="modal" data-target="#cadastrar"><span class="glyphicon glyphicon-log-in" ></span> Cadastro</a></li>
-        <li><a href="#" data-toggle="modal" data-target="#alterar_senha"><span class="glyphicon glyphicon-pencil" ></span> Alterar senha</a></li>
-        <li><a href="#" id="chamar_mod_id"><span class="glyphicon glyphicon-info-sign" ></span> Consultar ID</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#cadastrar"><span class="glyphicon glyphicon-log-in"></span> Cadastro</a></li>
+        <li><a href="#" data-toggle="modal" data-target="#alterar_senha"><span class="glyphicon glyphicon-pencil"></span> Alterar senha</a></li>
+        <li><a href="#" id="chamar_mod_id"><span class="glyphicon glyphicon-info-sign"></span> Consultar ID</a></li>
       </ul>
     </div>
   
-    <div class="jumbotron text-center">
-      <h1>MONITORE A USABILIDADE DE SUA APLICAÇÃO WEB</h1>
-      <p>CONHEÇA NOSSA FERRAMENTA!</p>
-      <img src=".\images\usabilidade2.jpg">
-    
-      <div class="container">
-        <div class="row">
-          <div class="col-sm-4"></div>
-          <div class="col-sm-4 c_mouseenter">
-            <h3>O QUE É USABILIDADE?</h3>
-            <p style="font-size:medium"> “Usabilidade é a medida de qualidade da experiência de um usuário ao interagir com um produto ou um sistema”.</p>
-            <p style="font-size:small">Jakob Nielsen</p>
+    <div class="tab-content">
+      <div id="home" class="tab-pane fade in active">
+        <div class="jumbotron text-center">
+          <h1>MONITORE A USABILIDADE DE SUA APLICAÇÃO WEB</h1>
+          <p>CONHEÇA NOSSA FERRAMENTA!</p>
+          <img src=".\images\usabilidade2.jpg">
+        
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-4"></div>
+              <div class="col-sm-4">
+                <h2>O QUE É USABILIDADE?</h2>
+                <p style="font-size:medium"> "Usabilidade é a medida de qualidade da experiência de um usuário ao interagir com um produto ou um sistema."</p>
+                <p style="font-size:small">Jakob Nielsen</p>
+              </div>
+            </div>
+          </div>
+        </div>        
+      </div>
+
+      <!--Referente à como usar a ferramenta-->
+      <div id="menu1" class="tab-pane fade">
+        <div class="jumbotron text-center">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-2"></div>
+              
+              <div class="col-sm-8">
+                <img src=".\images\usabilidade.png">
+                <h3>Instruções de como usar a ferramenta:</h3>
+                <p style="font-size:medium">A nossa ferramenta tem a finalidade de monitorar, remotamente, a página de sua aplicação Web, visando analisar a usabilidade da aplicação através de eventos ocorridos na página por meio das ações dos usuários que interagem com a página. Todos os dados coletados são armazenados no Banco de Dados Firebase, oferecido pela plataforma do Google.</p> 
+                <p style="font-size:medium">Através dos resultados é possível analisar quais elementos estão funcionais dentro de sua aplicação, realizando realmente a função que devem realizar. O melhor?! Você, administrador da aplicação, define quais elementos gostaria que fossem analisados e qual a relevância que eles têm em sua aplicação!</p>
+                <p style="font-size:medium">Para usar a nossa ferramenta, você deverá ser o administrador e desenvolvedor da aplicação Web. Caso seja o administrador, mas não seja também o desenvolvedor, deverá entrar em contato com quem desenvolveu a sua aplicação, para que consiga usar a nossa ferramenta.</p>
+                <p style="font-size:medium">Primeiramente você deverá adicionar o nosso Script "coletor_dados.js" à sua página HTML.</p>
+                <p style="font-size:medium">"OFUSCAR" E COLAR SCRIPT AQUI PARA ESTAR DISPONÍVEL AOS ADMINISTRADORES DAS APPS.</p>
+                <p style="font-size:medium">Após adicionar o nosso Script, você deverá realizar o seu cadastro aqui em nossa página, informando seu e-mail e senha. Ao salvar o seu cadastro, você receberá um ID (Identificador) específico para que seja anexado, também, à sua página HTML. </p>
+                <p style="font-size:medium">Anexe esse ID à tag body da página HTML através do atributo de recuperação data-id = " ".</p>
+                <p style="font-size:medium">Segue exemplo abaixo:</p>
+                <label id="como_usar1"></label>
+                <p style="font-size:medium">Através do ID e do nosso Script "coletor_dados.js", a nossa ferramenta será integrada à sua aplicação Web! E, assim, poderá realizar o monitoramento de sua aplicação.</p>
+                <p style="font-size:medium">Para que você consiga mapear todos os elementos que deseja, você deverá adicionar um atributo de recuperação data-track = " ", cada um com um nome diferente, à cada tag que contém o elemento que deverá ser mapeado. O data-track funcionará como um identificador de cada elemento, por isso, deve necessariamente apresentar nomes únicos.</p>
+                <p style="font-size:medium">Além do data-track, outro atributo de recuperação data-peso = " " deverá ser adicionado às tags dos elementos que você deseja mapear. Este atributo será responsável por definir a relevância (Em porcentagem %) que o elemento têm na aplicação Web, para você, o administrador.</p>
+                <p style="font-size:medium">Segue exemplo abaixo:</p>
+                <label id="como_usar2"></label>
+                <p style="font-size:medium">Para consultar seus dados, clique na aba "Consultar Dados". Você deverá estar loggado para que consiga ver e analisar os resultados! Selecione a URL da página que gostaria de ver os resultados, e também o intervalo de datas para a consulta. Após isto, clique no botão "Consultar resultados".</p>
+                <p style="font-size:medium">Para sair da consulta, basta fechar a página da ferramenta ou realizar uma atualização da página (F5).</p>
+              </div>
+
+              <div class="col-sm-2"></div>
+
+            </div>
+          </div>
+        </div>         
+      </div>
+
+      <!--Referente à contato-->
+      <div id="menu2" class="tab-pane fade">
+        <div class="jumbotron text-center">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-2"></div>
+              <div class="col-sm-8">
+                <h3>COMO PODEMOS TE AJUDAR?</h3>
+                <img src=".\images\ajuda.png" width="140" height="160"> 
+                <p style="font-size:large">Em casos de dúvidas, sugestões ou reclamações, entre em contato conosco através do e-mail: </p>
+                <p style="font-size:medium">viewup.usability@gmail.com</p>
+              </div>
+              <div class="col-sm-2"></div>
+            </div>
           </div>
         </div>
-      </div>      
+      </div>
+
+      <!--Referente à consultar os dados-->
+      <div id="menu3" class="tab-pane fade">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-4">  
+			        <div class="form-group">
+                <label for="sel2">Selecione a URL para a análise</label>
+                <select class="form-control" id="sel2"></select>
+				        <label id="sel2_val"></label>
+              </div> 
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group">
+                <label for="data_ini">Informe Data Inicial</label>
+				        <input type="text" class="form-control date" id="data_ini" readonly="true">
+				        <label id="data_ini_val"></label>
+              </div>
+            </div>
+            <div class="col-sm-3">
+			        <div class="form-group">  
+                <label for="data_fim">Informe Data Final</label>
+                <input type="text" class="form-control date" id="data_fim" readonly="true">
+				        <label id="data_fim_val"></label>
+              </div>
+            </div>
+			      <div class="col-sm-2">
+			        <div class="form-group"> 
+			          <label for="mostrar_result">Acione para consultar</label>				
+                <button id="mostrar_result" type="button" class="btn btn-default">Consultar resultados</button>
+              </div>
+            </div>			 
+          </div>
+
+    		  <div class="row">
+    			  <div class="col-sm-3">
+        		  <div class="form-group"> 
+    				    <label for="pagina">Total de Acessos</label>				
+                <input type="text" class="form-control" id="tot_ace" readonly="true">
+              </div>
+            </div>
+        	  <div class="col-sm-3">
+    			    <div class="form-group"> 
+        		    <label for="acessos">Tempo Total de Permanência (Seg)</label>				
+                <input type="text" class="form-control" id="tot_per" readonly="true">
+              </div>
+            </div>
+        		<div class="col-sm-3">
+    			    <div class="form-group"> 
+    			      <label for="media">Tempo Médio de Permanência (Seg)</label>				
+                <input type="text" class="form-control" id="med_per" readonly="true">
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="form-group"> 
+                <label for="media">Média de Scroll (Rolagem de Tela)</label>       
+                <input type="text" class="form-control" id="med_scr" readonly="true">
+              </div>
+            </div>
+    		  </div>
+   
+    		  <div class="row">
+    			  <div class="col-sm-5"></div>
+        	    <div class="col-sm-2">
+    				    <label>TOTAL (INTEIRO) DE EVENTOS</label> 
+              </div>
+            <div class="col-sm-5"></div>
+    		  </div>
+   
+          <div class="row">
+            <div class="col-sm-12"> 
+              <table id="tab_tot" class="display" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>Data-Track</th>
+                    <th>Data-Peso(%)</th>
+                    <th>Click</th>
+                    <th>Double Click</th>
+                    <th>Focus</th>
+                    <th>Blur</th>
+                    <th>Submit</th>
+                    <th>Mouse Enter</th>
+                    <th>Mouse Leave</th>
+                  </tr>
+                </thead>
+				
+                <tfoot>
+                  <tr>
+                    <th>Data-Track</th>
+                    <th>Data-Peso(%)</th>
+                    <th>Click</th>
+                    <th>Double Click</th>
+                    <th>Focus</th>
+                    <th>Blur</th>
+                    <th>Submit</th>
+                    <th>Mouse Enter</th>
+                    <th>Mouse Leave</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>   
+          </div>
+		  
+    		  <div class="row">
+    			  <div class="col-sm-5"></div>
+        	    <div class="col-sm-2">
+    				    <label>MÉDIA DOS EVENTOS POR ACESSO</label> 
+              </div>
+            <div class="col-sm-5"></div>
+    		  </div>
+   
+  	      <div class="row">
+            <div class="col-sm-12"> 
+              <table id="tab_res" class="display" style="width:100%">
+                <thead>
+                  <tr>
+                    <th>Data-Track</th>
+                    <th>Data-Peso(%)</th>
+                    <th>Click</th>
+                    <th>Double Click</th>
+                    <th>Focus</th>
+                    <th>Blur</th>
+                    <th>Submit</th>
+                    <th>Mouse Enter</th>
+                    <th>Mouse Leave</th>
+                  </tr>
+                </thead>
+  				
+                <tfoot>
+                  <tr>
+                    <th>Data-Track</th>
+                    <th>Data-Peso(%)</th>
+                    <th>Click</th>
+                    <th>Double Click</th>
+                    <th>Focus</th>
+                    <th>Blur</th>
+                    <th>Submit</th>
+                    <th>Mouse Enter</th>
+                    <th>Mouse Leave</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>   
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div align="center">
+      <p>
+        <a href="https://pt-br.facebook.com/"><img src=".\images\face.png" width="30" height="30"></a>
+        <a href="https://www.instagram.com/?hl=pt-br"><img src=".\images\insta.png" width="30" height="30"></a>
+      </p>
+      <p>Acesse nossas redes sociais!</p>
     </div>
   </nav>
+</body>
 
-  <div align="center">
-    <p>
-      <a href="https://pt-br.facebook.com/"><img class="c_mouseenter c_click" src=".\images\face.png" width="30" height="30"></a>
-      <a href="https://www.instagram.com/?hl=pt-br"><img src=".\images\insta.png" width="30" height="30"></a>
-    </p>
-    <p class="c_click">Acesse nossas redes sociais!</p>
-  </div>
-
-  <!-- Modal Cadastro Admin -->
+<!-- Modal Cadastro Admin -->
   <div class="modal fade" id="cadastrar">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <button type="button" class="close fechar_cad" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Cadastro do Administrador</h4>
         </div>
         <div class="modal-body">
@@ -103,13 +302,13 @@
         </div>
         <div class="modal-footer">
           <button id="salvar_cadastro" type="button" class="btn btn-default" disabled>Salvar</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-default fechar_cad" data-dismiss="modal">Fechar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Alterar Senha -->
+<!-- Modal Alterar Senha -->
   <div class="modal fade" id="alterar_senha">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -149,12 +348,12 @@
     </div>
   </div>
 
-  <!-- Modal Logar -->
+<!-- Modal Logar -->
   <div class="modal fade" id="logar">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <button type="button" class="close fechar_id" data-dismiss="modal">&times;</button>
+          <button type="button" class="close fechar_logar" data-dismiss="modal">&times;</button>
           <h4 class="modal-title">Logar</h4>
         </div>
         <div class="modal-body">
@@ -172,14 +371,15 @@
           <!--</form>-->
         </div>
         <div class="modal-footer">
-          <button id="consultar_id" type="button" class="btn btn-default">Logar</button>
-          <button type="button" class="btn btn-default fechar_id" data-dismiss="modal">Fechar</button>
+		      <label id="logar_msg"></label>
+          <button id="logar_id" type="button" class="btn btn-default">Logar</button>
+          <button type="button" class="btn btn-default fechar_logar" data-dismiss="modal">Fechar</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal Consultar ID -->
+<!-- Modal Consultar ID -->
   <div class="modal fade" id="mostra_id">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -188,7 +388,10 @@
           <h4 class="modal-title">Consulta do ID do Administrador</h4>
         </div>
         <div class="modal-body">
-          <p>Este é seu ID. Anexe ao seu código HTML para integrar a nossa ferramenta à sua aplicação web!</p>
+          <p id="info_email"></p>
+          <p>Este é seu ID. Anexe ao seu código HTML, na tag "body" para integrar a nossa ferramenta à sua aplicação web!</p>
+          <p>Exemplo</p>
+          <p id="info_body"></p>
           <label id="traz_id"></label>
         </div>
         <div class="modal-footer">
@@ -199,5 +402,4 @@
     </div>
   </div>
 
-</body>
 </html>

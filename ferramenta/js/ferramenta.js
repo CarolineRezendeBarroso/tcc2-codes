@@ -1,8 +1,24 @@
-/*Coletor de dados*/
-
 $(document).ready(function(){
 
-	// Initialize Firebase
+	//Adicionar efeito à tabela de dados - deixar a linguagem em português
+	//tabela total (valores inteiros)
+	var t = $('#tab_tot').DataTable(
+		{
+         	"language": {
+            	"url": "https://cdn.datatables.net/plug-ins/1.10.12/i18n/Portuguese-Brasil.json"
+            }
+		} 
+	);
+	//tabela de média   
+	var m = $('#tab_res').DataTable(
+		{
+        	"language": {
+            	"url": "https://cdn.datatables.net/plug-ins/1.10.12/i18n/Portuguese-Brasil.json"
+            }
+		} 
+	);
+
+   	// Initialize Firebase
   	var config = {
 	    apiKey: "AIzaSyDfV-P1DvRvvBfAUBbCzi90PX96jG5MY2c",
 	    authDomain: "coletordados-62e45.firebaseapp.com",
@@ -217,11 +233,45 @@ $(document).ready(function(){
 	   	return temp.toLowerCase();
 	}
 
-  	//Objeto Literal de controle de cada administrador
-    var controle_admin = {
+	//Objeto Literal de controle de cada administrador
+  	var controle_admin = {
 	    email: "",
 	    senha: ""
 	};
+
+	var lista = new Map();
+	var tot_lista = new Map();
+
+	//Objeto Literal de controle da página
+ 	var controle_pag = {
+  		acesso:1,
+     	entrada: new Date().getTime(),
+     	saida: "",
+     	permanencia:0,
+        scroll:0,
+        ultimo_backup: new Date().getTime(),
+        lista_eventos: [null]
+    };
+
+	//Objeto Literal Totalizador
+	var totalizador_pag = {
+		acesso:0, 
+	    permanencia:0,
+	    scroll:0,
+	    lista_eventos: [null]
+	};
+
+	function Evento() {
+		this.data_peso = 0;
+  		this.data_track = "";
+  		this.click = 0;
+        this.dblclick = 0;
+     	this.focus = 0;
+	    this.blur = 0;
+	    this.submit = 0;
+	    this.mouseenter = 0;
+	    this.mouseleave = 0;
+    };
 
 	$("#email_cadastro").focus(function(){
 		$("#email_cad_msg").text("");
@@ -230,32 +280,41 @@ $(document).ready(function(){
 		$("#conf_senha_cadastro").attr("disabled", true);
 		$("#salvar_cadastro").attr("disabled", true);
 		$("#conf_token").text("");
-		$("#senha_cadastro").val('');
+		$("#senha_cadastro").val("");
 		$("#conf_senha_cadastro").val('');
     });
 
 	$("#email_cadastro").blur(function(){
 		if($("#email_cadastro").val() == ""){
 			$("#email_cad_msg").text("E-mail precisa ser informado!");	
-		}else{
-			$("#email_cad_msg").text("");
-			$("#senha_cadastro").attr("disabled", false);
-  			$("#conf_senha_cadastro").attr("disabled", false);
+			return;
 		}
-
+		if (! isEmail($("#email_cadastro").val())){
+   			$("#email_cad_msg").text("E-mail inválido!"); 
+   			return;
+  		}
+		$("#email_cad_msg").text("");
+		$("#senha_cadastro").attr("disabled", false);
+  		$("#conf_senha_cadastro").attr("disabled", false);
+		$("#conf_token").text("");
 		//Consultar se email já existe
 		var ref = firebase.database().ref("Admin" + "/" + MD5($("#email_cadastro").val()));
-		ref.orderByChild("email").on("child_added", function(snapshot){
-  			//console.log(snapshot.key + " email é " + snapshot.val().email + " senha é " + snapshot.val().senha);
-  			if(snapshot.val().email != null){
+		ref.once("value", function(snapshot) {
+  			if(snapshot.val() != null){
   				$("#email_cad_msg").text("E-mail já cadastrado!" + "\n" + "Consulte seu ID ou Altere sua senha na página inicial!");
   				$("#senha_cadastro").attr("disabled", true);
   				$("#conf_senha_cadastro").attr("disabled", true);
 			}
 		});
-		$("#conf_token").text("");
 	});
 
+	$(".fechar_cad").click(function(){
+		$("#email_cadastro").val("");
+		$("#senha_cadastro").val("");
+		$("#conf_senha_cadastro").val("");
+		$("#email_cad_msg").text("");
+		$("#conf_token").text("");
+	});
 
 	$("#senha_cadastro").blur(function(){
 		if($("#senha_cadastro").val() == ""){
@@ -285,8 +344,16 @@ $(document).ready(function(){
 		//controle_admin.id_admin = MD5($("#email_cadastro").val());
 		//Enviar para o banco
 		enviar_dados();
-		$("#conf_token").text(MD5($("#email_cadastro").val()));
+		$("#conf_token").text("Seu ID é: " + MD5($("#email_cadastro").val()));
 		$("#salvar_cadastro").attr("disabled", true);
+		t.clear().draw();
+		m.clear().draw();
+		$('#tot_ace').val("");
+		$('#tot_per').val("");
+		$('#med_per').val("");
+		$('#med_scr').val("" );
+		$('#logado').removeClass("bg-danger");
+		$('#logado').text('Olá, ' + $("#email_cadastro").val());		
 	});
 
 	//Modal alterar senha do Admin
@@ -327,20 +394,25 @@ $(document).ready(function(){
 			return;
 		}
 
-		//Consultar se email e senha já existem
+		//Consultar se email e senha já existem  
 		var ref = firebase.database().ref("Admin" + "/" + MD5($("#email_altera").val()));
-		ref.orderByChild("email").on("child_added", function(snapshot){
-  			//console.log(snapshot.key + " email é " + snapshot.val().email + " senha é " + snapshot.val().senha);
-  			if(snapshot.val().email != null && snapshot.val().senha == MD5($("#senha_alterar").val())){
-  				controle_admin.email = snapshot.val().email;
-  				controle_admin.senha = MD5($("#senha_nova").val());
-  				enviar_dados();
-  				alert("Senha alterada com sucesso!");
+		ref.once("value", function(snapshot) {
+			if(snapshot.val() == null){
+				alert("Usuário não cadastrado!");
 			}else{
-				alert("E-mail ou Senha inválido(a)!");
+				console.log(snapshot.val().controle_admin.senha);
+				if(snapshot.val().controle_admin.senha != MD5($("#senha_alterar").val())){
+					alert("Senha inválida!");
+				}else{
+					controle_admin.email = snapshot.val().controle_admin.email;
+		  			controle_admin.senha = MD5($("#senha_nova").val());
+		  			enviar_dados();
+		  			alert("Senha alterada com sucesso!");
+				}
 			}
+		}, function (errorObject) {
+		  console.log("The read failed: " + errorObject.code);
 		});
-		//ref.end();
 	});
 
 	$(".fechar_alt").click(function(){
@@ -350,35 +422,215 @@ $(document).ready(function(){
 		$("#confirma_alt").val("");
 	});
 
-	//Modal consultar ID do Admin
-	$("#consultar_id").click(function(){
+	//Modal logar usuário
+	$("#logar_id").click(function(){
 		//Consultar se email e senha já existem
 		var ref = firebase.database().ref("Admin" + "/" + MD5($("#email_id").val()));
-		ref.orderByChild("email").on("child_added", function(snapshot){
-  			//console.log(snapshot.key + " email é " + snapshot.val().email + " senha é " + snapshot.val().senha);
-  			if(snapshot.val().email != null && snapshot.val().senha == MD5($("#senha_id").val())){
-  				controle_admin.email = $("#email_id").val();
-				controle_admin.senha = MD5($("#senha_id").val());
-  				alert("Logado com sucesso!");
-			}else{
-				alert("Senha inválida xxxx!");
+		$('#email_id_msg').text('');
+		$('#senha_id_msg').text('');
+		$('#logar_msg').text('');
+		
+		$("#sel2_val").text("");
+		$("#data_ini_val").text("");
+		$("#data_fim_val").text("");
+		t.clear().draw();
+		m.clear().draw();
+		$('#tot_ace').val("");
+		$('#tot_per').val("");
+		$('#med_per').val("");
+		$('#med_scr').val("");		
+				
+		ref.once("value", function(snapshot) {
+			if (snapshot.val() === null){
+				$('#email_id_msg').text('E-mail não cadastrado!');
+				return;
 			}
+			if (snapshot.val().controle_admin.senha !== MD5($("#senha_id").val())){
+				$('#senha_id_msg').text('Senha inválida!');
+				return;
+			}
+			$('#logado').removeClass("bg-danger");
+			$('#logado').text('Olá, ' + $("#email_id").val());
+			controle_admin.email = $("#email_id").val();
+			$("#sel2").empty();
+			$("#data_ini").val("");
+			$("#data_fim").val("");
+			$("#email_id").val("");
+			$("#senha_id").val("");
+			//Fechar modal automaticamente
+			$("#logar").modal("hide");
+			
+			var ref = firebase.database().ref("Admin_url");
+			ref.orderByChild("id_admin").equalTo(MD5(controle_admin.email)).on("child_added", function(snapshot){
+				$("#sel2").append("<option>" + snapshot.key + "</option>");
+			});
 		});
 	});
-	//Modal consultar ID do Admin
+	
+	//Modal logar usuário
+	$(".fechar_logar").click(function(){
+		$("#sel2").empty();
+		$("#data_ini").val("");
+		$("#data_fim").val("");
+		var ref = firebase.database().ref("Admin_url");
+		ref.orderByChild("id_admin").equalTo(MD5(controle_admin.email)).on("child_added", function(snapshot){
+    		$("#sel2").append("<option>" + snapshot.key + "</option>");
+  		});
+		$("#email_id").val("");
+		$("#senha_id").val("");
+	});
+
+	//Modal consultar id
 	$(".fechar_id").click(function(){
 		$("#email_id").val("");
 		$("#senha_id").val("");
 	});
 
 	$("#chamar_mod_id").click(function(){
-		$("#traz_id").text(MD5(controle_admin.email));
-		$("#mostra_id").modal("show");
+		if(controle_admin.email === ""){
+			alert("E-mail em branco. Logue para acessar o ID!");
+		}else{
+			$("#info_email").text("Bem-vindo(a), " + controle_admin.email);
+			$("#info_body").text("<body data-id= " + "Copie e cole seu ID aqui" + ">");
+			$("#traz_id").text(MD5(controle_admin.email));
+			$("#mostra_id").modal("show");
+		}
+	});
+
+	$("#consulta_dados").click(function(){
+		consultar_dados();
+	});
+
+	$("#mostrar_result").click(function(){
+		//console.log($("#data_ini").val());
+		$("#sel2_val").text("");
+		$("#data_ini_val").text("");
+		$("#data_fim_val").text("");
+		//Limpa a tabela(clear) e a tela (apresentação da tabela - draw = refresh da página)
+		t.clear().draw();
+		m.clear().draw();
+		$('#tot_ace').val("");
+		$('#tot_per').val("");
+		$('#med_per').val("");
+		$('#med_scr').val("" );
+		//console.log($("#data_ini").val());
+		//console.log($("#data_fim").val());
+		//console.log(new Date($("#data_ini").val()).getTime());
+		if (controle_admin.email  === ""){
+			return;
+		}
+		if ($("#sel2").text() === ""){
+			$("#sel2_val").text("Url da página de análise inválida!");
+			return;
+		} 
+		if ($("#data_ini").val() === ""){
+			$("#data_ini_val").text("Data inicial não pode ser branco");
+			return;
+		}
+		if ($("#data_fim").val() === ""){
+			$("#data_fim_val").text("Data final não pode ser branco");
+			return;
+		}
+		
+		var data_1 = new Date($("#data_ini").val());
+		var data_2 = new Date($("#data_fim").val());
+		if (data_1 > data_2) {
+			$("#data_fim_val").text("Data inicial não pode ser maior que a data final");
+			return;
+		} 
+		
+		totalizador_pag.acesso = 0;
+    	totalizador_pag.permanencia = 0;
+    	totalizador_pag.scroll = 0;
+		tot_lista.clear();
+		var ref = firebase.database().ref($("#sel2").val());
+		ref.orderByChild("controle_pag/entrada").startAt(new Date($("#data_ini").val()).getTime()).endAt(new Date($("#data_fim").val()).getTime()).on("child_added", function(snapshot){
+    		//$("#sel2").append("<option>" + snapshot.key + "</option>");
+    		controle_pag = snapshot.val().controle_pag; 
+    		
+    		totalizador_pag.acesso = totalizador_pag.acesso + controle_pag.acesso;
+    		totalizador_pag.permanencia = totalizador_pag.permanencia + controle_pag.permanencia;
+    		totalizador_pag.scroll = totalizador_pag.scroll + controle_pag.scroll;
+    		lista = controle_pag.lista_eventos;
+			if (typeof lista !== 'undefined'){
+				//lista de eventos
+				var aLength = lista.length;
+				// regras para somar os eventos
+				// 1 - ler os arrays do banco referente aos eventos
+				// 2 - para cada array 
+				// 3 - localizar no map totalizador pelo data_track
+				// 4 - se localizar somar os eventos
+				// 5 - se não localizar criar um map e somar os eventos
+				for (var i=0; i < aLength; i++) {
+					if (typeof lista[i] !== 'undefined'){
+						//console.log(lista[i].data_track);
+
+						if(tot_lista.has(lista[i].data_track) == true){	
+							tot_lista.get(lista[i].data_track).click 		= tot_lista.get(lista[i].data_track).click 			+ lista[i].click;
+							tot_lista.get(lista[i].data_track).dblclick 	= tot_lista.get(lista[i].data_track).dblclick 		+ lista[i].dblclick;
+							tot_lista.get(lista[i].data_track).focus 		= tot_lista.get(lista[i].data_track).focus 			+ lista[i].focus;
+							tot_lista.get(lista[i].data_track).blur 		= tot_lista.get(lista[i].data_track).blur 			+ lista[i].blur;
+							tot_lista.get(lista[i].data_track).submit 		= tot_lista.get(lista[i].data_track).submit 		+ lista[i].submit;
+							tot_lista.get(lista[i].data_track).mouseenter  	= tot_lista.get(lista[i].data_track).mouseenter  	+ lista[i].mouseenter ;
+							tot_lista.get(lista[i].data_track).mouseleave 	= tot_lista.get(lista[i].data_track).mouseleave 	+ lista[i].mouseleave;
+						}else{
+							var obj = new Evento();
+							obj.data_peso  = lista[i].data_peso;
+							obj.data_track = lista[i].data_track;
+							obj.click      = obj.click       + lista[i].click;
+							obj.dblclick   = obj.dblclick    + lista[i].dblclick;
+							obj.focus      = obj.focus       + lista[i].focus ;
+							obj.blur       = obj.blur        + lista[i].blur  ;
+							obj.submit     = obj.submit      + lista[i].submit   ;
+							obj.mouseenter = obj.mouseenter  + lista[i].mouseenter;
+							obj.mouseleave = obj.mouseleave  + lista[i].mouseleave;
+							tot_lista.set(obj.data_track, obj);	
+						}
+					}
+				}
+			}
+	 		//Se for o último looping mostra os dados
+			$('#tot_ace').val(totalizador_pag.acesso);
+			$('#tot_per').val(Math.round((totalizador_pag.permanencia / 1000) * 100) / 100);
+			$('#med_per').val(Math.round((totalizador_pag.permanencia / 1000 / totalizador_pag.acesso) * 100) / 100);
+			$('#med_scr').val(Math.round((totalizador_pag.scroll / totalizador_pag.acesso) * 100) / 100);
+			//tabela total (valores inteiros)
+			t.clear();
+			//tabela de média
+			m.clear();
+			var counter = 1;
+     		tot_lista.forEach(function(obj,key){
+				t.row.add( [
+					obj.data_track,
+					obj.data_peso,
+					obj.click ,
+					obj.dblclick ,
+					obj.focus ,
+					obj.blur ,
+					obj.submit ,
+					obj.mouseenter ,
+					obj.mouseleave 
+				] ).draw( false );
+				m.row.add( [
+					obj.data_track,
+					obj.data_peso,
+					Math.round(obj.click / totalizador_pag.acesso * 100) / 100,
+					Math.round(obj.dblclick / totalizador_pag.acesso * 100) / 100,
+					Math.round(obj.focus / totalizador_pag.acesso * 100) / 100,
+					Math.round(obj.blur / totalizador_pag.acesso * 100) / 100,
+					Math.round(obj.submit / totalizador_pag.acesso * 100) / 100,
+					Math.round(obj.mouseenter / totalizador_pag.acesso * 100) / 100,
+					Math.round(obj.mouseleave / totalizador_pag.acesso * 100) / 100
+				] ).draw( false );
+		 
+				counter++;
+			});		
+		});	
 	});
 
 	function enviar_dados(){
 		//Salva todas as informações coletadas no Banco de Dados Firebase
-		firebase.database().ref("Admin" + "/" + MD5(controle_admin.email)).set({
+		firebase.database().ref("Admin" + "/" + MD5(controle_admin.email)).update({
 			controle_admin
 		});
 
@@ -386,5 +638,51 @@ $(document).ready(function(){
 			controle_admin
 		});*/
 	};
+
+	function consultar_dados(){
+		if(controle_admin.email == ""){
+			$('#logado').text("Logue para consultar os dados!");
+			$('#logado').addClass("bg-danger");
+		}
+	};
+
+  	function isEmail(email) {
+		var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+		return regex.test(email);
+ 	}
+	
+	$(".date").datepicker({
+		dateFormat: 'mm/dd/yy',
+		dayNames: ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'],
+		dayNamesMin: ['D','S','T','Q','Q','S','S','D'],
+		dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+		monthNames: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+		monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+		nextText: 'Próximo',
+		prevText: 'Anterior'
+	}); 
+
+	$("#como_usar0").click(function(){
+		$("#como_usar1").text("<body data-id= " + "Copie e cole seu ID aqui" + ">");
+		$("#como_usar2").text("<button data-track= " + "botao_comprar " + 
+							  "data-peso= " + "0.15" + ">" + 
+							  "</button>");
+	});
+
+	//Evento de saída da página
+	$(window).bind('beforeunload', function(){
+		$("#sel2_val").text("");
+		$("#data_ini_val").text("");
+		$("#data_fim_val").text("");
+		t.clear().draw();
+		m.clear().draw();
+		$('#tot_ace').val("");
+		$('#tot_per').val("");
+		$('#med_per').val("");
+		$('#med_scr').val("");
+		$("#data_ini").val("");
+		$("#data_fim").val("");
+		
+	});     
 });
 	
